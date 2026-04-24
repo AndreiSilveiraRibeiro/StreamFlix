@@ -27,7 +27,7 @@ print(f"Correção da coluna 'Data_Adesao': \n{leitura['Data_Adesao']}")
 print(leitura[leitura['Minutos_Assistidos'] <= 0])
 
 #Se tiver coloquei para ser retirado
-leitura['Minutos_Assistidos'] = leitura['Minutos_Assistidos'].apply(lambda x: x if x >= 0 else 0)
+leitura['Minutos_Assistidos'] = leitura['Minutos_Assistidos'].mask(leitura['Minutos_Assistidos'] < 0, 0)
 
 #Verificando se está tudo certo
 print(leitura[leitura['Minutos_Assistidos'] <= 0])
@@ -37,6 +37,8 @@ print(leitura['Plano'])
 
 #Arrumando e deixando tudo padronizado
 leitura['Plano'] = leitura['Plano'].str.title()
+#Troca de acento para sem
+leitura['Plano'] = leitura['Plano'].replace('Básico', 'Basico')
 
 #Verificando se deu certo
 print(leitura['Plano'])
