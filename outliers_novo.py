@@ -56,4 +56,4 @@ tabela.to_csv("tabela_dashboard.csv", index=False)
 # Envia a tabela tratada para o MySQL (cria/substitui a tabela 'usuarios')
 tabela.to_sql('usuarios', con=engine, if_exists='replace', index=False) 
 
-print("Pipeline finalizado: Dados tratados, exportados e carregados no MySQL com sucesso!")
+print("Pipeline finalizado: Dados tratados, exportados e carregados no MySQL com sucesso!"
