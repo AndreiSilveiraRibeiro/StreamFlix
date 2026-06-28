@@ -2,58 +2,51 @@ import pandas as pd
 import numpy as np
 
 #Transformando o arquivo .csv em DataFrame
-leitura = pd.read_csv('streamflix_raw.csv')
+tabela = pd.read_csv('streamflix_raw.csv')
 
 #Analisando o DataFrame para ver possiveis correções
-print(f"O DataFrame: \n{leitura}")
+print(f"O DataFrame: \n{tabela}")
+print(tabela.shape)
+tabela.info()
 
-#Verificando se os tipos das colunas estão certos
-print(f"Os tipos de cada coluna do DataFrame:")
-leitura.info()
+print(tabela['Data_Adesao'])
+print(f"Quantidade de valores nulos: {tabela['Data_Adesao'].isnull().sum()}")
 
-#Analisando a quantidade de linha que tem no inicio para verificar no final
-print(f"Quantidade de linha e coluna: {leitura.shape}")
+tabela['Data_Adesao'] = tabela['Data_Adesao'].str.replace("/", "-")
+tabela['Data_Adesao'] = tabela['Data_Adesao'].str.replace(".", "-")
+tabela['Data_Adesao'] = tabela['Data_Adesao'].str.replace(r"(\d{2})-(\d{2})-(\d{4})", r"\3-\2-\1", regex=True)
+tabela['Data_Adesao'] = pd.to_datetime(tabela['Data_Adesao'], errors='coerce')
 
-#Analisando especificamente a coluna 'Data_Adesao' para ver oque tem de errado e possiveis melhoras
-print(f"Coluna 'Data_Adesao' original: \n{leitura['Data_Adesao']}")
+print(f"Quantidade de valores nulos: {tabela['Data_Adesao'].isnull().sum()}")
+print(tabela['Data_Adesao'])
 
-#Transfomardo a coluna 'Data_Adesao' em DataTime
-leitura['Data_Adesao'] = pd.to_datetime(leitura['Data_Adesao'], format='mixed', dayfirst=True, errors='coerce')
+print(tabela['Minutos_Assistidos'])
 
-#Verificando se sobrou algo para fazer na coluna e se está tudo certo
-print(f"Correção da coluna 'Data_Adesao': \n{leitura['Data_Adesao']}")
+print(tabela[tabela['Minutos_Assistidos'] < 0])
+print(tabela[tabela['Plano'] == 'premium'])
 
-#Analisando se tem numeros negativos na coluna 'Minutos_Assistidos'
-print(leitura[leitura['Minutos_Assistidos'] <= 0])
+tabela['Minutos_Assistidos'] = np.where(tabela['Minutos_Assistidos'] < 0, tabela['Minutos_Assistidos'].abs(), tabela['Minutos_Assistidos'])
 
-#Se tiver coloquei para ser retirado
-leitura['Minutos_Assistidos'] = leitura['Minutos_Assistidos'].mask(leitura['Minutos_Assistidos'] < 0, 0)
+print(tabela[tabela['Minutos_Assistidos'] < 0])
+print(tabela[tabela['Plano'] == 'premium'])
+print(tabela['Minutos_Assistidos'].isnull().sum())
 
-#Verificando se está tudo certo
-print(leitura[leitura['Minutos_Assistidos'] <= 0])
+print(tabela['Plano'])
+print(tabela['Plano'].isnull().sum())
+print(tabela['Plano'].unique())
 
-#Analisando agora a coluna 'Plano'
-print(leitura['Plano'])
+tabela['Plano'] = tabela['Plano'].str.title()
+tabela['Plano'] = tabela['Plano'].str.replace("á", "a")
 
-#Arrumando e deixando tudo padronizado
-leitura['Plano'] = leitura['Plano'].str.title()
-#Troca de acento para sem
-leitura['Plano'] = leitura['Plano'].replace('Básico', 'Basico')
+print(tabela['Plano'])
+print(tabela['Plano'].unique())
 
-#Verificando se deu certo
-print(leitura['Plano'])
+print(f"O DataFrame: \n{tabela}")
+print(tabela.shape)
+tabela.info()
+print(tabela.isnull().sum())
 
-#Tirando duplicatas e apagando dados nulos
-leitura.drop_duplicates()
-leitura = leitura.dropna()
-
-#Verificando se tem dados nulos, quantas colunas foram perdidas e como ta o DataFrame
-print(leitura.isnull().sum())
-print(leitura.shape)
-print(leitura)
-
-#Salvando o DataFrame como .csv
-leitura.to_csv('Streamflix_limpo.csv', index=False)
+tabela.to_csv('Streamflix_limpo.csv', index=False)
 
 #Retorno para verificar se deu certo
 print('Salvo com sucesso!')
